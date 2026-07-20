@@ -57,14 +57,13 @@ access_seeds:
   atv_seed_file: data/raw/access_atv.geojson
 
 dwr_habitat:
-  source: "Utah DWR Open Data Hub (dwr-data-utahdnr.hub.arcgis.com)"
-  # ArcGIS FeatureServer/MapServer "query" endpoint URLs. This sandbox cannot browse
-  # dwr-data-utahdnr.hub.arcgis.com to discover the exact item URLs (arcgis.com is
-  # blocked here) -- open each dataset's page, "View API Resource" -> copy the
-  # FeatureServer/N URL, and paste below. Leave blank to skip that layer.
-  crucial_range_service_url: ""     # e.g. https://services*.arcgis.com/.../FeatureServer/0  (elk+deer crucial range)
-  migration_corridor_service_url: ""
-  crucial_range_file: data/raw/dwr_crucial_range.geojson       # cache of the query result
+  source: "Utah DWR Open Data Hub (dwr-data-utahdnr.hub.arcgis.com), real data -- Utah Mule Deer Habitat / Utah Elk Habitat / Migration Corridors datasets"
+  # Per-species habitat files (SEASON/VALUE/SPECIES/COMMENTS schema). Only polygons
+  # where VALUE == "crucial" are used as the overlap bonus -- "substantial" is a real
+  # but lower-tier classification, not used here. Missing file for a species just
+  # drops that species' dwr_overlap term (see habitat.py graceful degradation).
+  deer_habitat_file: data/raw/dwr_deer_habitat.geojson
+  elk_habitat_file: data/raw/dwr_elk_habitat.geojson
   migration_corridor_file: data/raw/dwr_migration_corridor.geojson
   overlap_bonus_weight: 0.25     # see habitat_weights below, must match
 

@@ -48,10 +48,16 @@ def main():
     species_list = cfg["run"]["species"]
     habitat_paths = {}
     for sp in species_list:
+        # Only pass this species' own DWR layers -- deer crucial habitat must not
+        # leak into the elk score and vice versa. Migration corridor data we have
+        # is deer-only (see dwr.py), so it's only attached to the deer run.
+        species_dwr_layers = {"habitat": dwr_layers.get(f"{sp}_habitat")}
+        if sp == "deer":
+            species_dwr_layers["migration_corridor"] = dwr_layers.get("migration_corridor")
         # habitat scoring is cheap (array math on cached terrain rasters) -- always
         # recompute so a weight retune in config.yaml takes effect without needing
         # --force, per the brief's "retuning takes seconds" requirement.
-        habitat_paths[sp] = compute_habitat_score(cfg, sp, terrain_paths, landcover_path, dwr_layers, force=True)
+        habitat_paths[sp] = compute_habitat_score(cfg, sp, terrain_paths, landcover_path, species_dwr_layers, force=True)
 
     # blended score across species (mean), used for priority ranking
     import numpy as np

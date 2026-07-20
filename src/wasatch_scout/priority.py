@@ -83,10 +83,13 @@ def build_priority_zones(cfg: dict, habitat_path: Path, foot_minutes_path: Path,
     with rasterio.open(dem_path) as ds:
         elev = ds.read(1).astype("float64")
 
-    dwr_overlap_path = habitat_path.parent / "dwr_overlap.tif"
+    # Union across every species' overlap raster present (dwr_overlap_elk.tif,
+    # dwr_overlap_deer.tif, ...) -- a zone counts as DWR-overlapping if it overlaps
+    # for any scored species.
     dwr_overlap = None
-    if dwr_overlap_path.exists():
-        dwr_overlap, _, _, _ = _load(dwr_overlap_path)
+    for p in sorted(habitat_path.parent.glob("dwr_overlap_*.tif")):
+        arr, _, _, _ = _load(p)
+        dwr_overlap = arr if dwr_overlap is None else np.maximum(dwr_overlap, arr)
 
     foot_seeds = json.loads(foot_seeds_path.read_text())
 

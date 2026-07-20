@@ -127,7 +127,10 @@ def compute_habitat_score(cfg: dict, species: str, terrain_paths: dict, landcove
     dwr_score = _dwr_overlap_score(dwr_layers, terrain_paths["aspect"])
     if dwr_score is not None:
         terms["dwr_overlap"] = dwr_score
-        dwr_overlap_path = processed / "dwr_overlap.tif"
+        # species-specific filename -- deer and elk DWR layers differ, so each
+        # species' overlap raster must be kept separate (priority.py unions them
+        # when reporting a zone's overall dwr_overlap_pct).
+        dwr_overlap_path = processed / f"dwr_overlap_{species}.tif"
         if not dwr_overlap_path.exists() or force:
             with rasterio.open(terrain_paths["aspect"]) as t:
                 dwr_profile = t.profile.copy()

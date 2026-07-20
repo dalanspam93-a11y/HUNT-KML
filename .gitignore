@@ -5,8 +5,10 @@ data/raw/*
 !data/raw/unit_boundary.geojson
 !data/raw/access_foot.geojson
 !data/raw/access_atv.geojson
-!data/raw/dwr_crucial_range.geojson
+!data/raw/dwr_deer_habitat.geojson
+!data/raw/dwr_elk_habitat.geojson
 !data/raw/dwr_migration_corridor.geojson
+!data/raw/ownership_parcels.geojson
 data/interim/
 data/processed/
 output/

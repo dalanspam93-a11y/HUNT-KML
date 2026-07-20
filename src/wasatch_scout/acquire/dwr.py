@@ -78,14 +78,55 @@ def _load_cached_or_query(cfg: dict, service_url_key: str, file_key: str, aoi: A
     return gdf
 
 
+def _load_species_habitat(cfg: dict, file_key: str, aoi: AOI, label: str) -> gpd.GeoDataFrame | None:
+    """Load a real DWR species-habitat export (SEASON/VALUE/SPECIES/COMMENTS schema),
+    keep only VALUE == 'crucial' polygons, clip to the AOI. "substantial" is a real,
+    lower-tier DWR classification -- not used for the overlap bonus."""
+    path = resolve(cfg, file_key)
+    if not path.exists():
+        log.warning("%s: no file at %s -- this species' dwr_overlap term will be dropped.", label, path)
+        return None
+    gdf = gpd.read_file(path)
+    if gdf.crs is None:
+        gdf = gdf.set_crs(WGS84)
+    gdf = gdf.to_crs(WGS84)
+    if "VALUE" in gdf.columns:
+        before = len(gdf)
+        gdf = gdf[gdf["VALUE"].astype(str).str.lower() == "crucial"]
+        log.info("%s: %d/%d features are VALUE=crucial", label, len(gdf), before)
+    aoi_poly = aoi.boundary_wgs84.geometry.union_all()
+    gdf = gdf[gdf.intersects(aoi_poly)]
+    log.info("%s: %d crucial feature(s) intersect AOI", label, len(gdf))
+    return gdf
+
+
+def _load_migration_corridor(cfg: dict, aoi: AOI) -> gpd.GeoDataFrame | None:
+    """Real DWR migration-corridor export (Type=high/medium/low use, area_name=herd,
+    Species). Keeps high+medium use only -- low use is a real but weak signal, same
+    reasoning as dropping 'substantial' in _load_species_habitat."""
+    path = resolve(cfg, "dwr_habitat.migration_corridor_file")
+    if not path.exists():
+        log.warning("DWR migration corridor: no file at %s -- this term will be dropped.", path)
+        return None
+    gdf = gpd.read_file(path)
+    if gdf.crs is None:
+        gdf = gdf.set_crs(WGS84)
+    gdf = gdf.to_crs(WGS84)
+    if "Type" in gdf.columns:
+        before = len(gdf)
+        gdf = gdf[gdf["Type"].astype(str).str.lower().isin(["high use", "medium use"])]
+        log.info("DWR migration corridor: %d/%d features are high/medium use", len(gdf), before)
+    aoi_poly = aoi.boundary_wgs84.geometry.union_all()
+    gdf = gdf[gdf.intersects(aoi_poly)]
+    log.info("DWR migration corridor: %d feature(s) intersect AOI", len(gdf))
+    return gdf
+
+
 def acquire_dwr_habitat(cfg: dict, aoi: AOI) -> dict[str, gpd.GeoDataFrame | None]:
-    crucial = _load_cached_or_query(
-        cfg, "dwr_habitat.crucial_range_service_url", "dwr_habitat.crucial_range_file", aoi, "DWR crucial range"
-    )
-    migration = _load_cached_or_query(
-        cfg, "dwr_habitat.migration_corridor_service_url", "dwr_habitat.migration_corridor_file", aoi, "DWR migration corridor"
-    )
-    return {"crucial_range": crucial, "migration_corridor": migration}
+    deer = _load_species_habitat(cfg, "dwr_habitat.deer_habitat_file", aoi, "DWR mule deer crucial habitat")
+    elk = _load_species_habitat(cfg, "dwr_habitat.elk_habitat_file", aoi, "DWR elk crucial habitat")
+    migration = _load_migration_corridor(cfg, aoi)
+    return {"deer_habitat": deer, "elk_habitat": elk, "migration_corridor": migration}
 
 
 def acquire_ownership(cfg: dict, aoi: AOI) -> gpd.GeoDataFrame | None:
