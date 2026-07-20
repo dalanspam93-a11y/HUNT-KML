@@ -18,21 +18,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
 - Habitat score: weighted blend of aspect, forest cover/edge proximity, bench/saddle landform, and DWR crucial-range/migration overlap -- any input layer that could not be acquired is dropped from the blend (weights renormalized) rather than faked; check the status report for which terms were actually used.
 - Ownership: private and CWMU land is excluded from priority zones when ownership data is available; SITLA parcels are flagged, not excluded (legal but rules apply). Zones built without verified ownership data are flagged &quot;OWNERSHIP UNVERIFIED&quot; -- do not treat those as confirmed public land.</description>
         <Folder>
-            <Style>
-                <LineStyle>
+            <Style id="9">
+                <LineStyle id="11">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="10">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="14">
+                <IconStyle id="15">
                     <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -42,21 +42,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="23">
+                <LineStyle id="25">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="24">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="28">
+                <IconStyle id="29">
                     <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -66,21 +66,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="41">
+                <LineStyle id="43">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="42">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="46">
+                <IconStyle id="47">
                     <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -90,21 +90,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="55">
+                <LineStyle id="57">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="56">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="60">
+                <IconStyle id="61">
                     <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -114,21 +114,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="69">
+                <LineStyle id="71">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="70">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="74">
+                <IconStyle id="75">
                     <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -138,21 +138,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="83">
+                <LineStyle id="85">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="84">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="88">
+                <IconStyle id="89">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -162,21 +162,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="97">
+                <LineStyle id="99">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="98">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="102">
+                <IconStyle id="103">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -186,21 +186,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="111">
+                <LineStyle id="113">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="112">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="116">
+                <IconStyle id="117">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -210,21 +210,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="125">
+                <LineStyle id="127">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="126">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="130">
+                <IconStyle id="131">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -234,21 +234,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="139">
+                <LineStyle id="141">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="140">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="144">
+                <IconStyle id="145">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -258,21 +258,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="153">
+                <LineStyle id="155">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="154">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="158">
+                <IconStyle id="159">
                     <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -282,21 +282,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="167">
+                <LineStyle id="169">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="168">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="172">
+                <IconStyle id="173">
                     <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -306,21 +306,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="201">
+                <LineStyle id="203">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="202">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="206">
+                <IconStyle id="207">
                     <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -330,21 +330,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="215">
+                <LineStyle id="217">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="216">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="220">
+                <IconStyle id="221">
                     <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -354,21 +354,21 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <LineStyle>
+            <Style id="229">
+                <LineStyle id="231">
                     <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
                     <width>3</width>
                 </LineStyle>
-                <PolyStyle>
+                <PolyStyle id="230">
                     <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
                 </PolyStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="234">
+                <IconStyle id="235">
                     <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
                     <scale>1.4</scale>
@@ -873,8 +873,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
             </Placemark>
         </Folder>
         <Folder>
-            <Style>
-                <IconStyle>
+            <Style id="240">
+                <IconStyle id="241">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -883,8 +883,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="245">
+                <IconStyle id="246">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -893,8 +893,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="250">
+                <IconStyle id="251">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -903,8 +903,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="255">
+                <IconStyle id="256">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -913,8 +913,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="260">
+                <IconStyle id="261">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -923,8 +923,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="265">
+                <IconStyle id="266">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -933,8 +933,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="270">
+                <IconStyle id="271">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -943,8 +943,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="275">
+                <IconStyle id="276">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -953,8 +953,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="280">
+                <IconStyle id="281">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -963,8 +963,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="285">
+                <IconStyle id="286">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -973,8 +973,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="290">
+                <IconStyle id="291">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>
@@ -983,8 +983,8 @@ Flags: OWNERSHIP UNVERIFIED</description>
                     </Icon>
                 </IconStyle>
             </Style>
-            <Style>
-                <IconStyle>
+            <Style id="295">
+                <IconStyle id="296">
                     <colorMode>normal</colorMode>
                     <scale>1</scale>
                     <heading>0</heading>

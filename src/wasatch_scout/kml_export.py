@@ -290,10 +290,14 @@ def _strip_onx_incompatible(path: Path):
     auto id="N" attributes on every element. Confirmed by field-testing
     against onX's web importer: a single-point KML with these fails import,
     the identical placemark without them succeeds. Neither is used anywhere
-    in our output, so strip both post-save rather than fight simplekml's API
-    for something it doesn't expose a toggle for."""
+    in our output EXCEPT shared <Style id="N"> elements, which placemarks
+    reference via styleUrl="#N" -- stripping those ids breaks every style
+    reference in the file. A broken styleUrl silently falls back to KML's
+    raw spec default, which for Polygon is filled solid white, so this
+    previously caused a total white-out with no visible error. Only
+    non-Style ids are stripped now."""
     import re
     text = path.read_text()
     text = text.replace(' xmlns:gx="http://www.google.com/kml/ext/2.2"', "")
-    text = re.sub(r'\s+id="\d+"', "", text)
+    text = re.sub(r'(?<!Style)\s+id="\d+"', "", text)
     path.write_text(text)
