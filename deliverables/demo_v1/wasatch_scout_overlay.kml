@@ -20,12 +20,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
         <Folder>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -33,8 +33,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -43,12 +44,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -56,8 +57,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -66,12 +68,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -79,8 +81,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -89,12 +92,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -102,8 +105,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -112,12 +116,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -125,8 +129,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff0000ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -135,12 +140,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -148,8 +153,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -158,12 +164,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -171,8 +177,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -181,12 +188,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -194,8 +201,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -204,12 +212,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -217,8 +225,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -227,12 +236,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -240,8 +249,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -250,12 +260,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -263,8 +273,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -273,12 +284,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -286,8 +297,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -296,12 +308,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -309,8 +321,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -319,12 +332,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -332,8 +345,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
@@ -342,12 +356,12 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <LineStyle>
-                    <color>dc00a5ff</color>
+                    <color>ff00a5ff</color>
                     <colorMode>normal</colorMode>
-                    <width>2</width>
+                    <width>3</width>
                 </LineStyle>
                 <PolyStyle>
-                    <color>5a00d7ff</color>
+                    <color>a000d7ff</color>
                     <colorMode>normal</colorMode>
                     <fill>1</fill>
                     <outline>1</outline>
@@ -355,8 +369,9 @@ DATA &amp; METHOD NOTES (see this run's status report for specifics that applied
             </Style>
             <Style>
                 <IconStyle>
+                    <color>ff00ffff</color>
                     <colorMode>normal</colorMode>
-                    <scale>1.3</scale>
+                    <scale>1.4</scale>
                     <heading>0</heading>
                     <Icon>
                         <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>

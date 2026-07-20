@@ -201,15 +201,27 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
         placemark = zone_folder.newmultigeometry(name=base_name, description=description)
         for part in parts:
             placemark.newpolygon(outerboundaryis=list(part.exterior.coords))
-        placemark.style.polystyle.color = simplekml.Color.changealphaint(90, simplekml.Color.gold)
-        placemark.style.linestyle.color = simplekml.Color.changealphaint(220, simplekml.Color.orange)
-        placemark.style.linestyle.width = 2
+        # Zones are small (0.5-18 acres) and nearly invisible at whole-unit zoom with a
+        # faint fill -- bumped well up from the original 35%/86% alpha since there's no
+        # "dominates the map" risk with only 15 modest-size shapes (unlike the dropped
+        # effort/habitat polygon layers).
+        placemark.style.polystyle.color = simplekml.Color.changealphaint(160, simplekml.Color.gold)
+        placemark.style.linestyle.color = simplekml.Color.changealphaint(255, simplekml.Color.orange)
+        placemark.style.linestyle.width = 3
 
-        # A dedicated pin at the zone centroid, in addition to the polygon outline --
-        # easy to spot and click straight to the balloon.
+        # A dedicated pin at the zone centroid, color-tiered by rank so priority reads
+        # at a glance without opening every balloon: top third red (hottest), middle
+        # orange, bottom third yellow.
         pin = zone_folder.newpoint(name=f"#{z.rank} pin", coords=[z.centroid_lonlat], description=description)
         pin.style.iconstyle.icon.href = "http://maps.google.com/mapfiles/kml/shapes/star.png"
-        pin.style.iconstyle.scale = 1.3
+        pin.style.iconstyle.scale = 1.4
+        tier = (z.rank - 1) / max(len(zones) - 1, 1)  # 0.0 = top rank, 1.0 = bottom rank
+        if tier < 1 / 3:
+            pin.style.iconstyle.color = simplekml.Color.red
+        elif tier < 2 / 3:
+            pin.style.iconstyle.color = simplekml.Color.orange
+        else:
+            pin.style.iconstyle.color = simplekml.Color.yellow
 
     # 2. Effort Bands (optional, see include_polygon_layers docstring above)
     if include_polygon_layers:
