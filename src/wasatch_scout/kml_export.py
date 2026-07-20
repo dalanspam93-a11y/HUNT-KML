@@ -123,21 +123,25 @@ def _downsampled_bands(path: Path, bin_edges: list[float], nodata_override=None,
 
 
 def _add_multi(folder, geom, name, color_kml, fill_alpha_int):
-    """One plain Polygon Placemark per fragment -- no MultiGeometry, no nested
-    Folder. onX's KML importer is built around simple Waypoints/Routes/Lines/
-    Shapes/Tracks and (per their own support docs) can reject files containing
-    "extra data" that Google Earth tolerates; MultiGeometry and folder-within-
-    folder are the two most likely offenders, so both are avoided here even
-    though they're valid KML 2.2."""
+    """One MultiGeometry placemark per band, grouping every fragment into a
+    single importable/colorable shape. Earlier field testing wrongly blamed
+    MultiGeometry for onX import failures; the real cause (confirmed by
+    testing) was simplekml's unused xmlns:gx namespace + auto id attributes,
+    stripped in _strip_onx_incompatible. onX doesn't read KML style on
+    import and requires manual per-shape recoloring, so keeping fragments
+    grouped matters a lot in practice -- it's the difference between
+    recoloring ~9 band shapes by hand vs. ~250 individual fragments."""
     geoms = [g for g in (geom.geoms if hasattr(geom, "geoms") else [geom]) if not g.is_empty]
-    for i, g in enumerate(geoms):
-        label = name if len(geoms) == 1 else f"{name} ({i + 1}/{len(geoms)})"
-        pol = folder.newpolygon(name=label, outerboundaryis=list(g.exterior.coords))
-        pol.style.polystyle.color = simplekml.Color.changealphaint(fill_alpha_int, color_kml)
-        pol.style.polystyle.fill = 1
-        pol.style.polystyle.outline = 1
-        pol.style.linestyle.color = simplekml.Color.changealphaint(180, color_kml)
-        pol.style.linestyle.width = 1
+    if not geoms:
+        return
+    placemark = folder.newmultigeometry(name=name)
+    for g in geoms:
+        placemark.newpolygon(outerboundaryis=list(g.exterior.coords))
+    placemark.style.polystyle.color = simplekml.Color.changealphaint(fill_alpha_int, color_kml)
+    placemark.style.polystyle.fill = 1
+    placemark.style.polystyle.outline = 1
+    placemark.style.linestyle.color = simplekml.Color.changealphaint(180, color_kml)
+    placemark.style.linestyle.width = 1
 
 
 def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Path, seeds: dict,
@@ -183,12 +187,14 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
             + "\n".join(access_lines) + flags
         )
 
-        for i, part in enumerate(parts):
-            name = base_name if len(parts) == 1 else f"{base_name} ({i + 1}/{len(parts)})"
-            pol = zone_folder.newpolygon(name=name, outerboundaryis=list(part.exterior.coords), description=description)
-            pol.style.polystyle.color = simplekml.Color.changealphaint(90, simplekml.Color.gold)
-            pol.style.linestyle.color = simplekml.Color.changealphaint(220, simplekml.Color.orange)
-            pol.style.linestyle.width = 2
+        if not parts:
+            continue
+        placemark = zone_folder.newmultigeometry(name=base_name, description=description)
+        for part in parts:
+            placemark.newpolygon(outerboundaryis=list(part.exterior.coords))
+        placemark.style.polystyle.color = simplekml.Color.changealphaint(90, simplekml.Color.gold)
+        placemark.style.linestyle.color = simplekml.Color.changealphaint(220, simplekml.Color.orange)
+        placemark.style.linestyle.width = 2
 
     # 2. Effort Bands
     effort_folder = kml.newfolder(name="2. Effort Bands (one-way hiking minutes from foot access)")
