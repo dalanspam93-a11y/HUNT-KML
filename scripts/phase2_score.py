@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Phase 2: build habitat score (per species + blended), ownership mask, and
 priority zones. Prints a summary table before anything gets exported to KML.
-Rerun after retuning config.yaml weights -- everything here reads from
-Phase 1's cached rasters, no re-download.
+Rerun after retuning config.yaml weights -- habitat/ownership/priority always
+recompute fresh (cheap, seconds), Phase 1's DEM/terrain/effort-surface stay
+cached (expensive, not touched here).
 
-Usage: PYTHONPATH=src python3 scripts/phase2_score.py [--force]
+Usage: PYTHONPATH=src python3 scripts/phase2_score.py
 """
 from __future__ import annotations
 
-import argparse
 import logging
 import sys
 from pathlib import Path
@@ -29,10 +29,6 @@ log = logging.getLogger("phase2")
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--force", action="store_true")
-    args = ap.parse_args()
-
     cfg = load_config()
     ensure_dirs(cfg)
     processed = resolve(cfg, "paths.processed_dir")
@@ -52,7 +48,10 @@ def main():
     species_list = cfg["run"]["species"]
     habitat_paths = {}
     for sp in species_list:
-        habitat_paths[sp] = compute_habitat_score(cfg, sp, terrain_paths, landcover_path, dwr_layers, force=args.force)
+        # habitat scoring is cheap (array math on cached terrain rasters) -- always
+        # recompute so a weight retune in config.yaml takes effect without needing
+        # --force, per the brief's "retuning takes seconds" requirement.
+        habitat_paths[sp] = compute_habitat_score(cfg, sp, terrain_paths, landcover_path, dwr_layers, force=True)
 
     # blended score across species (mean), used for priority ranking
     import numpy as np
@@ -76,7 +75,7 @@ def main():
         blended_path = habitat_paths[species_list[0]]
 
     ownership_gdf = acquire_ownership(cfg, aoi)
-    ownership_path = compute_ownership_mask(cfg, ownership_gdf, dem_path, force=args.force)
+    ownership_path = compute_ownership_mask(cfg, ownership_gdf, dem_path, force=True)  # cheap; always reflect current config
 
     seeds = load_access_seeds(cfg, aoi)
     foot_minutes_path = processed / "foot_minutes.tif"

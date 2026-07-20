@@ -13,8 +13,8 @@ import numpy as np
 import rasterio
 import simplekml
 from rasterio.features import shapes as rio_shapes
-from scipy.ndimage import zoom
-from shapely.geometry import shape as shapely_shape
+from scipy.ndimage import zoom, uniform_filter
+from shapely.geometry import shape as shapely_shape, MultiPolygon
 from shapely.ops import unary_union
 
 log = logging.getLogger(__name__)
@@ -61,18 +61,37 @@ def _reproject_arr_bounds(path: Path):
     return arr, nodata, transform, crs
 
 
-def _downsampled_bands(path: Path, bin_edges: list[float], nodata_override=None, downsample_factor: int = 6):
-    """Reclassify a raster into bands, downsample for a lighter KML, return
-    list of (band_label, shapely_polygon_in_wgs84) merged per band."""
+def _downsampled_bands(path: Path, bin_edges: list[float], nodata_override=None, downsample_factor: int = 10,
+                        smooth_window: int = 5, min_part_acres: float = 2.0, max_parts_per_band: int = 300):
+    """Reclassify a raster into bands, downsample + smooth + drop tiny fragments
+    for a lighter KML. Raw per-pixel banding of a noisy/high-frequency raster
+    (aspect-driven habitat score especially) fragments into tens of thousands of
+    speckle polygons if vectorized directly -- smoothing before digitizing and
+    dropping sub-threshold fragments keeps this to a small, GE-friendly polygon
+    count while still reading as the same overall pattern.
+
+    Returns list of (band_label, shapely_polygon_in_working_crs) merged per band.
+    """
     arr, nodata, transform, crs = _reproject_arr_bounds(path)
     if nodata_override is not None:
         nodata = nodata_override
     valid = arr != nodata
-    arr_small = zoom(np.where(valid, arr, np.nan), 1 / downsample_factor, order=0)
+    arr_small = zoom(np.where(valid, arr.astype("float64"), np.nan), 1 / downsample_factor, order=0)
     new_transform = transform * transform.scale(downsample_factor, downsample_factor)
 
-    labels = np.digitize(arr_small, bin_edges, right=False)
-    labels = np.where(np.isnan(arr_small), 255, labels).astype("uint8")
+    valid_small = ~np.isnan(arr_small)
+    filled = np.where(valid_small, arr_small, 0.0)
+    weight = uniform_filter(valid_small.astype("float64"), size=smooth_window)
+    smoothed_sum = uniform_filter(filled, size=smooth_window)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        smoothed = np.where(weight > 0, smoothed_sum / np.where(weight > 0, weight, 1), np.nan)
+    smoothed = np.where(valid_small, smoothed, np.nan)
+
+    labels = np.digitize(smoothed, bin_edges, right=False)
+    labels = np.where(np.isnan(smoothed), 255, labels).astype("uint8")
+
+    pixel_area_m2 = abs(new_transform.a * new_transform.e)
+    min_area_m2 = min_part_acres / 0.000247105
 
     results = []
     for band_idx in range(1, len(bin_edges)):
@@ -87,22 +106,37 @@ def _downsampled_bands(path: Path, bin_edges: list[float], nodata_override=None,
         if not polys:
             continue
         merged = unary_union(polys).simplify(30, preserve_topology=True)
-        results.append((band_idx, merged))
+        parts = list(merged.geoms) if hasattr(merged, "geoms") else [merged]
+        kept = [p for p in parts if not p.is_empty and p.area >= min_area_m2]
+        dropped = len(parts) - len(kept)
+        if dropped:
+            log.info("Band %d: dropped %d fragment(s) under %.1f acres (kept %d)",
+                      band_idx, dropped, min_part_acres, len(kept))
+        if len(kept) > max_parts_per_band:
+            kept.sort(key=lambda p: p.area, reverse=True)
+            log.info("Band %d: capping %d fragments to largest %d", band_idx, len(kept), max_parts_per_band)
+            kept = kept[:max_parts_per_band]
+        if not kept:
+            continue
+        results.append((band_idx, MultiPolygon(kept) if len(kept) > 1 else kept[0]))
     return results, crs
 
 
 def _add_multi(folder, geom, name, color_kml, fill_alpha_int):
-    geoms = geom.geoms if hasattr(geom, "geoms") else [geom]
+    """One multigeometry placemark per band (not one per polygon fragment) so a
+    band with hundreds of small parts still shows up as a single, light layer
+    entry in Google Earth."""
+    geoms = [g for g in (geom.geoms if hasattr(geom, "geoms") else [geom]) if not g.is_empty]
+    if not geoms:
+        return
+    placemark = folder.newmultigeometry(name=name)
     for g in geoms:
-        if g.is_empty:
-            continue
-        exterior = list(g.exterior.coords)
-        pol = folder.newpolygon(name=name, outerboundaryis=exterior)
-        pol.style.polystyle.color = simplekml.Color.changealphaint(fill_alpha_int, color_kml)
-        pol.style.polystyle.fill = 1
-        pol.style.polystyle.outline = 1
-        pol.style.linestyle.color = simplekml.Color.changealphaint(180, color_kml)
-        pol.style.linestyle.width = 1
+        placemark.newpolygon(outerboundaryis=list(g.exterior.coords))
+    placemark.style.polystyle.color = simplekml.Color.changealphaint(fill_alpha_int, color_kml)
+    placemark.style.polystyle.fill = 1
+    placemark.style.polystyle.outline = 1
+    placemark.style.linestyle.color = simplekml.Color.changealphaint(180, color_kml)
+    placemark.style.linestyle.width = 1
 
 
 def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Path, seeds: dict,
@@ -139,12 +173,12 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
         if z.nearest_foot:
             access_lines.append(
                 f"Foot: {z.nearest_foot['name']} -- {z.nearest_foot['one_way_minutes']} min one-way, "
-                f"{z.nearest_foot['vert_gain_m']:+.0f} m vert"
+                f"{z.nearest_foot['vert_gain_m']:+.0f} m net vert (straight-line elev change, not total climb)"
             )
         if z.nearest_atv:
             access_lines.append(
                 f"ATV-alt: {z.nearest_atv['name']} -- {z.nearest_atv['one_way_minutes']} min one-way, "
-                f"{z.nearest_atv['vert_gain_m']:+.0f} m vert"
+                f"{z.nearest_atv['vert_gain_m']:+.0f} m net vert (straight-line elev change, not total climb)"
             )
         flags = f"\nFlags: {', '.join(z.ownership_flags)}" if z.ownership_flags else ""
         placemark.description = (
@@ -174,7 +208,8 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
     hab_names = {1: "0.0-0.4 low", 2: "0.4-0.6 fair", 3: "0.6-0.75 good", 4: "0.75-0.9 very good", 5: "0.9-1.0 excellent"}
     hab_colors = {1: simplekml.Color.white, 2: simplekml.Color.lightblue, 3: simplekml.Color.blue,
                   4: simplekml.Color.purple, 5: simplekml.Color.magenta}
-    hab_bands, hab_crs = _downsampled_bands(habitat_path, hab_edges, nodata_override=-1)
+    hab_bands, hab_crs = _downsampled_bands(habitat_path, hab_edges, nodata_override=-1,
+                                             downsample_factor=15, smooth_window=7, min_part_acres=3.0)
     for band_idx, geom in hab_bands:
         geom_wgs = gpd.GeoSeries([geom], crs=hab_crs).to_crs("EPSG:4326").iloc[0]
         sub = heat_folder.newfolder(name=hab_names.get(band_idx, f"band {band_idx}"))
