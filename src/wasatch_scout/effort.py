@@ -54,7 +54,8 @@ class _TimeCostMCP(skgraph.MCP_Flexible):
 
 
 def _cost_from_seeds(elev: np.ndarray, seed_rc: list[tuple[int, int]], sampling: tuple[float, float],
-                      pace_mult: float, base_kmh: float, slope_coeff: float, offset: float) -> tuple[np.ndarray, np.ndarray]:
+                      pace_mult: float, base_kmh: float, slope_coeff: float, offset: float,
+                      max_effort_minutes: float | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Minimum Tobler hiking-time (minutes) from any of seed_rc to every cell, plus
     which seed index (into seed_rc) reached each cell fastest (-1 if unreached).
 
@@ -66,22 +67,53 @@ def _cost_from_seeds(elev: np.ndarray, seed_rc: list[tuple[int, int]], sampling:
     independent single-source pass and the exact per-seed bias (== elevation
     at that seed, verified empirically) is subtracted back out before taking
     the elementwise minimum across seeds.
+
+    Each pass is cropped to a window around the seed sized from the fastest
+    speed the Tobler model can ever produce (base_kmh * pace_mult, at the
+    optimal slight-downhill grade) times the effort budget, plus a 1.5x safety
+    margin for path inefficiency -- no true shortest path within budget can
+    reach outside that radius, so cropping loses no accuracy while cutting
+    compute roughly (full_grid_area / window_area)-fold.
     """
     accum = np.full(elev.shape, np.inf, dtype="float64")
     nearest_seed = np.full(elev.shape, -1, dtype="int16")
+    py, px = sampling
+
+    if max_effort_minutes is not None:
+        max_speed_kmh = base_kmh * pace_mult
+        radius_m = (max_effort_minutes / 60.0) * max_speed_kmh * 1000.0 * 1.5
+        radius_px_r = int(np.ceil(radius_m / py))
+        radius_px_c = int(np.ceil(radius_m / px))
+        log.info("Cropping each seed's search to a %.1f km radius window (%d x %d px)",
+                  radius_m / 1000.0, radius_px_r * 2, radius_px_c * 2)
+    else:
+        radius_px_r = radius_px_c = None
+
+    nrows, ncols = elev.shape
     for i, (r, c) in enumerate(seed_rc):
         if np.isnan(elev[r, c]):
             log.warning("Seed at row=%d col=%d has no elevation data (outside DEM); skipping", r, c)
             continue
-        mcp = _TimeCostMCP(elev, sampling=sampling, pace_multiplier=pace_mult,
+
+        if radius_px_r is not None:
+            r0, r1 = max(0, r - radius_px_r), min(nrows, r + radius_px_r + 1)
+            c0, c1 = max(0, c - radius_px_c), min(ncols, c + radius_px_c + 1)
+        else:
+            r0, r1, c0, c1 = 0, nrows, 0, ncols
+
+        window = elev[r0:r1, c0:c1]
+        mcp = _TimeCostMCP(window, sampling=sampling, pace_multiplier=pace_mult,
                             base_kmh=base_kmh, slope_coeff=slope_coeff, offset=offset)
-        cost, _ = mcp.find_costs([(r, c)])
+        cost, _ = mcp.find_costs([(r - r0, c - c0)])
         bias = elev[r, c]
         corrected = cost - bias
-        better = corrected < accum
-        nearest_seed = np.where(better, i, nearest_seed)
-        accum = np.minimum(accum, corrected)
-        log.info("  seed %d/%d (row=%d col=%d) done", i + 1, len(seed_rc), r, c)
+
+        accum_window = accum[r0:r1, c0:c1]
+        nearest_window = nearest_seed[r0:r1, c0:c1]
+        better = corrected < accum_window
+        nearest_window[better] = i
+        accum_window[better] = corrected[better]
+        log.info("  seed %d/%d (row=%d col=%d) done, window %d x %d", i + 1, len(seed_rc), r, c, r1 - r0, c1 - c0)
     return accum, nearest_seed
 
 
@@ -143,10 +175,13 @@ def compute_effort_surface(cfg: dict, dem_path: Path, seeds: dict, force: bool =
         raise ValueError("No foot access seeds fall within the AOI -- cannot build effort surface.")
     log.info("Foot access seeds in AOI: %d", len(foot_rc))
 
-    log.info("Computing foot effort surface (%d seed(s), one full-grid pass each)...", len(foot_rc))
+    max_effort = cfg["run"]["max_effort_minutes"]
+    log.info("Computing foot effort surface (%d seed(s), cropped windows sized to the %d-min budget)...",
+              len(foot_rc), max_effort)
     foot_minutes, foot_nearest = _cost_from_seeds(
         elev, [(s["row"], s["col"]) for s in foot_rc], sampling=(py, px), pace_mult=pace_mult,
         base_kmh=eff_cfg["tobler_base_kmh"], slope_coeff=eff_cfg["tobler_slope_coeff"], offset=eff_cfg["tobler_offset"],
+        max_effort_minutes=max_effort,
     )
     foot_minutes = np.where(np.isnan(elev), np.nan, foot_minutes)
     _write_like(out["foot_minutes"], foot_minutes, dem_path, dtype="float32", nodata=-1)
@@ -163,6 +198,7 @@ def compute_effort_surface(cfg: dict, dem_path: Path, seeds: dict, force: bool =
             atv_minutes, atv_nearest = _cost_from_seeds(
                 elev, [(s["row"], s["col"]) for s in atv_rc], sampling=(py, px), pace_mult=pace_mult,
                 base_kmh=eff_cfg["tobler_base_kmh"], slope_coeff=eff_cfg["tobler_slope_coeff"], offset=eff_cfg["tobler_offset"],
+                max_effort_minutes=max_effort,
             )
             atv_minutes = np.where(np.isnan(elev), np.nan, atv_minutes)
             _write_like(out["atv_minutes"], atv_minutes, dem_path, dtype="float32", nodata=-1)
