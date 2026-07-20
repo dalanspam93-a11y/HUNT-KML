@@ -90,7 +90,7 @@ def main():
     atv_minutes_path = processed / "atv_minutes.tif"
     atv_nearest_path = processed / "atv_nearest_seed.tif"
     atv_seeds_path = processed / "atv_seeds.json"
-    has_atv = atv_minutes_path.exists()
+    has_atv = cfg["run"]["atv_available"] and atv_minutes_path.exists()
 
     zones = build_priority_zones(
         cfg, blended_path, foot_minutes_path, foot_nearest_path, foot_seeds_path, ownership_path,
