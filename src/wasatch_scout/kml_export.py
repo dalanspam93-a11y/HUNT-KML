@@ -197,12 +197,10 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
         placemark.style.linestyle.width = 2
 
         # A dedicated pin at the zone centroid, in addition to the polygon outline --
-        # easy to tap and navigate to, since the polygon alone gets lost among the
-        # effort-band/habitat-heat clutter (and onX doesn't render our fill color).
+        # easy to spot and click straight to the balloon.
         pin = zone_folder.newpoint(name=f"#{z.rank} pin", coords=[z.centroid_lonlat], description=description)
         pin.style.iconstyle.icon.href = "http://maps.google.com/mapfiles/kml/shapes/star.png"
         pin.style.iconstyle.scale = 1.3
-        placemark.style.linestyle.width = 2
 
     # 2. Effort Bands
     effort_folder = kml.newfolder(name="2. Effort Bands (one-way hiking minutes from foot access)")
@@ -214,8 +212,9 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
     band_gdf_crs = band_crs
     for band_idx, geom in bands:
         geom_wgs = gpd.GeoSeries([geom], crs=band_gdf_crs).to_crs("EPSG:4326").iloc[0]
-        _add_multi(effort_folder, geom_wgs, band_names.get(band_idx, str(band_idx)),
-                   band_colors.get(band_idx, simplekml.Color.white), 80)
+        band_name = band_names.get(band_idx, str(band_idx))
+        sub = effort_folder.newfolder(name=band_name)
+        _add_multi(sub, geom_wgs, band_name, band_colors.get(band_idx, simplekml.Color.white), 80)
 
     # 3. Habitat Score Heat
     heat_folder = kml.newfolder(name="3. Habitat Score Heat")
@@ -227,8 +226,9 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
                                              downsample_factor=15, smooth_window=7, min_part_acres=3.0)
     for band_idx, geom in hab_bands:
         geom_wgs = gpd.GeoSeries([geom], crs=hab_crs).to_crs("EPSG:4326").iloc[0]
-        _add_multi(heat_folder, geom_wgs, hab_names.get(band_idx, str(band_idx)),
-                   hab_colors.get(band_idx, simplekml.Color.white), 65)
+        hab_name = hab_names.get(band_idx, str(band_idx))
+        sub = heat_folder.newfolder(name=hab_name)
+        _add_multi(sub, geom_wgs, hab_name, hab_colors.get(band_idx, simplekml.Color.white), 65)
 
     # 4. Access Seeds Used
     seeds_folder = kml.newfolder(name="4. Access Seeds Used")
