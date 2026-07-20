@@ -145,7 +145,16 @@ def _add_multi(folder, geom, name, color_kml, fill_alpha_int):
 
 
 def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Path, seeds: dict,
-              out_path: Path, aoi_authoritative: bool, seeds_authoritative: bool):
+              out_path: Path, aoi_authoritative: bool, seeds_authoritative: bool,
+              include_polygon_layers: bool = False):
+    """include_polygon_layers controls whether the raster-derived effort-band and
+    habitat-heat polygon folders (2 and 3) are included. Off by default: these are
+    hundreds of small alpha-blended polygons draped over steep 3D terrain, which
+    reproducibly caused a Google Earth rendering failure (map goes solid white) for
+    this AOI even though the file itself is well-formed and not especially large.
+    The same information is already available as static PNG previews
+    (phase1_effort_preview.png, phase2_habitat_preview.png) without that risk. Zones
+    (folder 1) and access points (folder 4) are simple, few in number, and unaffected."""
     kml = simplekml.Kml()
     top_note = (
         ("\n\n*** AOI WARNING: unit boundary was NOT supplied -- an unofficial fallback bbox was used. "
@@ -202,45 +211,46 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
         pin.style.iconstyle.icon.href = "http://maps.google.com/mapfiles/kml/shapes/star.png"
         pin.style.iconstyle.scale = 1.3
 
-    # 2. Effort Bands
-    effort_folder = kml.newfolder(name="2. Effort Bands (one-way hiking minutes from foot access)")
-    max_effort = cfg["run"]["max_effort_minutes"]
-    edges = [0, 30, 60, 90, max(90, max_effort) + 1e6]
-    band_names = {1: "< 30 min", 2: "30-60 min", 3: "60-90 min", 4: f"> 90 min"}
-    band_colors = {1: simplekml.Color.green, 2: simplekml.Color.yellow, 3: simplekml.Color.orange, 4: simplekml.Color.red}
-    bands, band_crs = _downsampled_bands(foot_minutes_path, edges, nodata_override=-1)
-    band_gdf_crs = band_crs
-    for band_idx, geom in bands:
-        if band_idx == 4:
-            # "> 90 min" is explicitly out-of-budget/out-of-scope territory (see brief),
-            # and with sparse access points over a large unit it can cover most of the
-            # map -- a solid red fill there dominates the view instead of reading as
-            # "not interesting." Leaving it unrendered is itself the signal: uncolored
-            # means either close-in (< 30 min, just not highlighted) or beyond budget.
-            continue
-        geom_wgs = gpd.GeoSeries([geom], crs=band_gdf_crs).to_crs("EPSG:4326").iloc[0]
-        band_name = band_names.get(band_idx, str(band_idx))
-        sub = effort_folder.newfolder(name=band_name)
-        _add_multi(sub, geom_wgs, band_name, band_colors.get(band_idx, simplekml.Color.white), 80)
+    # 2. Effort Bands (optional, see include_polygon_layers docstring above)
+    if include_polygon_layers:
+        effort_folder = kml.newfolder(name="2. Effort Bands (one-way hiking minutes from foot access)")
+        max_effort = cfg["run"]["max_effort_minutes"]
+        edges = [0, 30, 60, 90, max(90, max_effort) + 1e6]
+        band_names = {1: "< 30 min", 2: "30-60 min", 3: "60-90 min", 4: "> 90 min"}
+        band_colors = {1: simplekml.Color.green, 2: simplekml.Color.yellow, 3: simplekml.Color.orange, 4: simplekml.Color.red}
+        bands, band_crs = _downsampled_bands(foot_minutes_path, edges, nodata_override=-1)
+        band_gdf_crs = band_crs
+        for band_idx, geom in bands:
+            if band_idx == 4:
+                # "> 90 min" is explicitly out-of-budget/out-of-scope territory (see brief),
+                # and with sparse access points over a large unit it can cover most of the
+                # map -- a solid red fill there dominates the view instead of reading as
+                # "not interesting." Leaving it unrendered is itself the signal: uncolored
+                # means either close-in (< 30 min, just not highlighted) or beyond budget.
+                continue
+            geom_wgs = gpd.GeoSeries([geom], crs=band_gdf_crs).to_crs("EPSG:4326").iloc[0]
+            band_name = band_names.get(band_idx, str(band_idx))
+            sub = effort_folder.newfolder(name=band_name)
+            _add_multi(sub, geom_wgs, band_name, band_colors.get(band_idx, simplekml.Color.white), 80)
 
-    # 3. Habitat Score Heat
-    heat_folder = kml.newfolder(name="3. Habitat Score Heat")
-    hab_edges = [0, 0.4, 0.6, 0.75, 0.9, 1.01]
-    hab_names = {1: "0.0-0.4 low", 2: "0.4-0.6 fair", 3: "0.6-0.75 good", 4: "0.75-0.9 very good", 5: "0.9-1.0 excellent"}
-    hab_colors = {1: simplekml.Color.white, 2: simplekml.Color.lightblue, 3: simplekml.Color.blue,
-                  4: simplekml.Color.purple, 5: simplekml.Color.magenta}
-    hab_bands, hab_crs = _downsampled_bands(habitat_path, hab_edges, nodata_override=-1,
-                                             downsample_factor=15, smooth_window=7, min_part_acres=3.0)
-    for band_idx, geom in hab_bands:
-        if band_idx == 1:
-            # "0.0-0.4 low" is most of the map for a partial (terrain-only) score --
-            # same reasoning as skipping the >90 min effort band: coloring the "nothing
-            # interesting" majority dominates the view instead of highlighting signal.
-            continue
-        geom_wgs = gpd.GeoSeries([geom], crs=hab_crs).to_crs("EPSG:4326").iloc[0]
-        hab_name = hab_names.get(band_idx, str(band_idx))
-        sub = heat_folder.newfolder(name=hab_name)
-        _add_multi(sub, geom_wgs, hab_name, hab_colors.get(band_idx, simplekml.Color.white), 65)
+        # 3. Habitat Score Heat
+        heat_folder = kml.newfolder(name="3. Habitat Score Heat")
+        hab_edges = [0, 0.4, 0.6, 0.75, 0.9, 1.01]
+        hab_names = {1: "0.0-0.4 low", 2: "0.4-0.6 fair", 3: "0.6-0.75 good", 4: "0.75-0.9 very good", 5: "0.9-1.0 excellent"}
+        hab_colors = {1: simplekml.Color.white, 2: simplekml.Color.lightblue, 3: simplekml.Color.blue,
+                      4: simplekml.Color.purple, 5: simplekml.Color.magenta}
+        hab_bands, hab_crs = _downsampled_bands(habitat_path, hab_edges, nodata_override=-1,
+                                                 downsample_factor=15, smooth_window=7, min_part_acres=3.0)
+        for band_idx, geom in hab_bands:
+            if band_idx == 1:
+                # "0.0-0.4 low" is most of the map for a partial (terrain-only) score --
+                # same reasoning as skipping the >90 min effort band: coloring the "nothing
+                # interesting" majority dominates the view instead of highlighting signal.
+                continue
+            geom_wgs = gpd.GeoSeries([geom], crs=hab_crs).to_crs("EPSG:4326").iloc[0]
+            hab_name = hab_names.get(band_idx, str(band_idx))
+            sub = heat_folder.newfolder(name=hab_name)
+            _add_multi(sub, geom_wgs, hab_name, hab_colors.get(band_idx, simplekml.Color.white), 65)
 
     # 4. Access Seeds Used
     seeds_folder = kml.newfolder(name="4. Access Seeds Used")
