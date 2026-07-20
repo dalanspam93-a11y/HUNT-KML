@@ -196,6 +196,14 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
         placemark.style.linestyle.color = simplekml.Color.changealphaint(220, simplekml.Color.orange)
         placemark.style.linestyle.width = 2
 
+        # A dedicated pin at the zone centroid, in addition to the polygon outline --
+        # easy to tap and navigate to, since the polygon alone gets lost among the
+        # effort-band/habitat-heat clutter (and onX doesn't render our fill color).
+        pin = zone_folder.newpoint(name=f"#{z.rank} pin", coords=[z.centroid_lonlat], description=description)
+        pin.style.iconstyle.icon.href = "http://maps.google.com/mapfiles/kml/shapes/star.png"
+        pin.style.iconstyle.scale = 1.3
+        placemark.style.linestyle.width = 2
+
     # 2. Effort Bands
     effort_folder = kml.newfolder(name="2. Effort Bands (one-way hiking minutes from foot access)")
     max_effort = cfg["run"]["max_effort_minutes"]
