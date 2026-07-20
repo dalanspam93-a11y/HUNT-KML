@@ -1,0 +1,103 @@
+# Wasatch Scouting-Score Overlay — run configuration
+# Retune weights/thresholds here and rerun Phase 2 from cached rasters (no re-download needed).
+
+run:
+  unit_name: "Wasatch Mountains, West"
+  unit_dwr_code: "17A"          # Utah DWR deer/elk herd unit 17, "West" subunit — CONFIRM against dwrapps.utah.gov/huntboundary before trusting zones
+  species: ["elk", "deer"]
+  tag_types: ["general_rifle", "archery"]
+  # 2026 Utah general dates (per DWR guidebook search, July 2026) — informational only, not used in scoring:
+  hunt_dates:
+    general_rifle_deer: "2026-10-17 to 2026-10-25"
+    general_rifle_elk_early: "2026-10-03 to 2026-10-09"
+    general_rifle_elk_late: "2026-10-10 to 2026-10-16"
+    archery: "2026-08-15 to 2026-09-16"
+  atv_available: true
+  atv_role: secondary            # foot trailheads drive the primary effort/pressure score; ATV-legal access is reported per-zone as a secondary/alternate route, not baked into ranking
+  max_effort_minutes: 90         # one-way hiking-time budget from legal foot access
+  pace_profile: average          # average | fast  (see effort.PACE_MULTIPLIERS)
+
+aoi:
+  buffer_miles: 2
+  # Authoritative source: export the unit boundary polygon from OnX Hunt or the DWR Hunt Planner
+  # (https://dwrapps.utah.gov/huntboundary/hbstart) as GeoJSON and drop it here. This sandbox
+  # cannot reach dwrapps.utah.gov/ArcGIS Online to fetch it automatically — see README.
+  boundary_file: data/raw/unit_boundary.geojson
+  # UNOFFICIAL fallback bbox, used only when boundary_file is absent, so the pipeline can still
+  # run end-to-end for testing. Roughly brackets the Salt Lake/Utah County west-slope Wasatch
+  # Front (Draper/Corner Canyon north through Big and Little Cottonwood, American Fork Canyon,
+  # to Provo Peak) from public unit-boundary text descriptions. DO NOT use to validate real
+  # ownership exclusion — replace with boundary_file before trusting any output.
+  fallback_bbox_unofficial:
+    min_lon: -111.75
+    min_lat: 40.30
+    max_lon: -111.55
+    max_lat: 40.75
+  working_crs: "EPSG:26912"      # UTM 12N, meters — used for all slope/cost-distance math
+
+paths:
+  raw_dir: data/raw
+  interim_dir: data/interim
+  processed_dir: data/processed
+  output_dir: output
+
+dem:
+  resolution_arcsec: "1/3"       # ~10 m, USGS 3DEP
+  source: "prd-tnm.s3.amazonaws.com (USGS 3DEP staged products, public S3, no key required)"
+
+landcover:
+  source: "NLCD (mrlc.gov) or LANDFIRE EVT (landfire.gov)"
+  forest_classes: [41, 42, 43]   # NLCD: deciduous, evergreen, mixed forest
+  shrub_classes: [52]            # NLCD: shrub/scrub
+  edge_search_radius_m: 100      # cells within this of a forest/open boundary score as edge
+
+access_seeds:
+  source: "manual export from OnX/GOHUNT (preferred), or UGRC roads + USFS MVUM"
+  foot_seed_file: data/raw/access_foot.geojson
+  atv_seed_file: data/raw/access_atv.geojson
+
+dwr_habitat:
+  source: "Utah DWR Open Data Hub (dwr-data-utahdnr.hub.arcgis.com)"
+  # ArcGIS FeatureServer/MapServer "query" endpoint URLs. This sandbox cannot browse
+  # dwr-data-utahdnr.hub.arcgis.com to discover the exact item URLs (arcgis.com is
+  # blocked here) -- open each dataset's page, "View API Resource" -> copy the
+  # FeatureServer/N URL, and paste below. Leave blank to skip that layer.
+  crucial_range_service_url: ""     # e.g. https://services*.arcgis.com/.../FeatureServer/0  (elk+deer crucial range)
+  migration_corridor_service_url: ""
+  crucial_range_file: data/raw/dwr_crucial_range.geojson       # cache of the query result
+  migration_corridor_file: data/raw/dwr_migration_corridor.geojson
+  overlap_bonus_weight: 0.25     # see habitat_weights below, must match
+
+ownership:
+  unit_boundary_service_url: ""     # DWR "Utah Big Game Hunt Boundaries" FeatureServer layer
+  ownership_service_url: ""         # SITLA/UGRC land ownership FeatureServer layer (gis.utah.gov)
+  boundary_ownership_file: data/raw/ownership_parcels.geojson
+  exclude_classes: ["private", "water"]
+  flag_separately: ["sitla"]
+  allowed_classes: ["usfs", "blm", "state_wildlife", "sitla"]
+
+# Habitat score = weighted sum, each term normalized 0-1. Must sum to 1.0.
+habitat_weights:
+  aspect: 0.30
+  cover_edge: 0.25
+  landform: 0.20
+  dwr_overlap: 0.25
+
+aspect_preference_degrees:
+  # Favored compass sectors per species for October thermal cover (tune here)
+  elk: {center: 45, halfwidth: 67.5}    # NE-centered, N through E
+  deer: {center: 45, halfwidth: 67.5}
+
+effort:
+  tobler_base_kmh: 6.0
+  tobler_slope_coeff: -3.5
+  tobler_offset: 0.05
+  pace_multiplier:
+    average: 1.0
+    fast: 1.18
+  atv_speed_kmh: 15.0            # rough legal ATV pace, only used to render the ATV-alternate access note
+
+priority:
+  top_n: 15
+  min_zone_cells: 25             # ~0.6 ha at 10 m, drop noise specks after clustering
+  habitat_score_threshold: 0.6   # cells below this never enter zone candidates
