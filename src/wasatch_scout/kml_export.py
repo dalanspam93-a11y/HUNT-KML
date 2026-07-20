@@ -232,5 +232,20 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     kml.save(str(out_path))
+    _strip_onx_incompatible(out_path)
     log.info("KML written: %s", out_path)
     return out_path
+
+
+def _strip_onx_incompatible(path: Path):
+    """simplekml always emits an unused xmlns:gx namespace declaration and
+    auto id="N" attributes on every element. Confirmed by field-testing
+    against onX's web importer: a single-point KML with these fails import,
+    the identical placemark without them succeeds. Neither is used anywhere
+    in our output, so strip both post-save rather than fight simplekml's API
+    for something it doesn't expose a toggle for."""
+    import re
+    text = path.read_text()
+    text = text.replace(' xmlns:gx="http://www.google.com/kml/ext/2.2"', "")
+    text = re.sub(r'\s+id="\d+"', "", text)
+    path.write_text(text)
