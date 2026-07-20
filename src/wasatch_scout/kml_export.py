@@ -123,20 +123,21 @@ def _downsampled_bands(path: Path, bin_edges: list[float], nodata_override=None,
 
 
 def _add_multi(folder, geom, name, color_kml, fill_alpha_int):
-    """One multigeometry placemark per band (not one per polygon fragment) so a
-    band with hundreds of small parts still shows up as a single, light layer
-    entry in Google Earth."""
+    """One plain Polygon Placemark per fragment -- no MultiGeometry, no nested
+    Folder. onX's KML importer is built around simple Waypoints/Routes/Lines/
+    Shapes/Tracks and (per their own support docs) can reject files containing
+    "extra data" that Google Earth tolerates; MultiGeometry and folder-within-
+    folder are the two most likely offenders, so both are avoided here even
+    though they're valid KML 2.2."""
     geoms = [g for g in (geom.geoms if hasattr(geom, "geoms") else [geom]) if not g.is_empty]
-    if not geoms:
-        return
-    placemark = folder.newmultigeometry(name=name)
-    for g in geoms:
-        placemark.newpolygon(outerboundaryis=list(g.exterior.coords))
-    placemark.style.polystyle.color = simplekml.Color.changealphaint(fill_alpha_int, color_kml)
-    placemark.style.polystyle.fill = 1
-    placemark.style.polystyle.outline = 1
-    placemark.style.linestyle.color = simplekml.Color.changealphaint(180, color_kml)
-    placemark.style.linestyle.width = 1
+    for i, g in enumerate(geoms):
+        label = name if len(geoms) == 1 else f"{name} ({i + 1}/{len(geoms)})"
+        pol = folder.newpolygon(name=label, outerboundaryis=list(g.exterior.coords))
+        pol.style.polystyle.color = simplekml.Color.changealphaint(fill_alpha_int, color_kml)
+        pol.style.polystyle.fill = 1
+        pol.style.polystyle.outline = 1
+        pol.style.linestyle.color = simplekml.Color.changealphaint(180, color_kml)
+        pol.style.linestyle.width = 1
 
 
 def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Path, seeds: dict,
@@ -156,15 +157,8 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
     # 1. Priority Scout Zones
     zone_folder = kml.newfolder(name="1. Priority Scout Zones")
     for z in zones:
-        parts = z.geometry.geoms if hasattr(z.geometry, "geoms") else [z.geometry]
-        placemark = zone_folder.newmultigeometry(name=f"#{z.rank} - {z.dominant_landform.title()} ({z.acres:.0f} ac)")
-        for part in parts:
-            if part.is_empty:
-                continue
-            placemark.newpolygon(outerboundaryis=list(part.exterior.coords))
-        placemark.style.polystyle.color = simplekml.Color.changealphaint(90, simplekml.Color.gold)
-        placemark.style.linestyle.color = simplekml.Color.changealphaint(220, simplekml.Color.orange)
-        placemark.style.linestyle.width = 2
+        parts = [p for p in (z.geometry.geoms if hasattr(z.geometry, "geoms") else [z.geometry]) if not p.is_empty]
+        base_name = f"#{z.rank} - {z.dominant_landform.title()} ({z.acres:.0f} ac)"
 
         why = f"Aspect/landform/cover blend score {z.mean_habitat:.2f}; dominant terrain: {z.dominant_landform}"
         if z.dwr_overlap_pct > 0:
@@ -181,13 +175,20 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
                 f"{z.nearest_atv['vert_gain_m']:+.0f} m net vert (straight-line elev change, not total climb)"
             )
         flags = f"\nFlags: {', '.join(z.ownership_flags)}" if z.ownership_flags else ""
-        placemark.description = (
+        description = (
             f"Rank {z.rank} of {len(zones)} | {z.acres:.0f} acres | priority score {z.priority_score:.2f}\n"
             f"Why it scored: {why}\n"
             f"Mean one-way hiking time from foot access: {z.mean_foot_minutes} min "
             f"(closest point {z.min_foot_minutes} min)\n"
             + "\n".join(access_lines) + flags
         )
+
+        for i, part in enumerate(parts):
+            name = base_name if len(parts) == 1 else f"{base_name} ({i + 1}/{len(parts)})"
+            pol = zone_folder.newpolygon(name=name, outerboundaryis=list(part.exterior.coords), description=description)
+            pol.style.polystyle.color = simplekml.Color.changealphaint(90, simplekml.Color.gold)
+            pol.style.linestyle.color = simplekml.Color.changealphaint(220, simplekml.Color.orange)
+            pol.style.linestyle.width = 2
 
     # 2. Effort Bands
     effort_folder = kml.newfolder(name="2. Effort Bands (one-way hiking minutes from foot access)")
@@ -199,8 +200,8 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
     band_gdf_crs = band_crs
     for band_idx, geom in bands:
         geom_wgs = gpd.GeoSeries([geom], crs=band_gdf_crs).to_crs("EPSG:4326").iloc[0]
-        sub = effort_folder.newfolder(name=band_names.get(band_idx, f"band {band_idx}"))
-        _add_multi(sub, geom_wgs, band_names.get(band_idx, str(band_idx)), band_colors.get(band_idx, simplekml.Color.white), 80)
+        _add_multi(effort_folder, geom_wgs, band_names.get(band_idx, str(band_idx)),
+                   band_colors.get(band_idx, simplekml.Color.white), 80)
 
     # 3. Habitat Score Heat
     heat_folder = kml.newfolder(name="3. Habitat Score Heat")
@@ -212,19 +213,21 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
                                              downsample_factor=15, smooth_window=7, min_part_acres=3.0)
     for band_idx, geom in hab_bands:
         geom_wgs = gpd.GeoSeries([geom], crs=hab_crs).to_crs("EPSG:4326").iloc[0]
-        sub = heat_folder.newfolder(name=hab_names.get(band_idx, f"band {band_idx}"))
-        _add_multi(sub, geom_wgs, hab_names.get(band_idx, str(band_idx)), hab_colors.get(band_idx, simplekml.Color.white), 65)
+        _add_multi(heat_folder, geom_wgs, hab_names.get(band_idx, str(band_idx)),
+                   hab_colors.get(band_idx, simplekml.Color.white), 65)
 
     # 4. Access Seeds Used
     seeds_folder = kml.newfolder(name="4. Access Seeds Used")
-    foot_sub = seeds_folder.newfolder(name="Foot trailheads" + ("" if seeds_authoritative else " (DEMO placeholders)"))
+    foot_tag = "" if seeds_authoritative else " (DEMO placeholder)"
     for _, row in seeds["foot"].iterrows():
-        pt = foot_sub.newpoint(name=str(row.get("name", "trailhead")), coords=[(row.geometry.x, row.geometry.y)])
+        pt = seeds_folder.newpoint(name=f"Foot: {row.get('name', 'trailhead')}{foot_tag}",
+                                    coords=[(row.geometry.x, row.geometry.y)])
         pt.style.iconstyle.icon.href = "http://maps.google.com/mapfiles/kml/shapes/hiker.png"
     if len(seeds.get("atv", [])):
-        atv_sub = seeds_folder.newfolder(name="ATV-legal routes" + ("" if seeds.get("atv_authoritative") else " (DEMO placeholders)"))
+        atv_tag = "" if seeds.get("atv_authoritative") else " (DEMO placeholder)"
         for _, row in seeds["atv"].iterrows():
-            pt = atv_sub.newpoint(name=str(row.get("name", "atv access")), coords=[(row.geometry.x, row.geometry.y)])
+            pt = seeds_folder.newpoint(name=f"ATV: {row.get('name', 'atv access')}{atv_tag}",
+                                        coords=[(row.geometry.x, row.geometry.y)])
             pt.style.iconstyle.icon.href = "http://maps.google.com/mapfiles/kml/shapes/cabin_baseball.png"
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
