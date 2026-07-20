@@ -211,6 +211,13 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
     bands, band_crs = _downsampled_bands(foot_minutes_path, edges, nodata_override=-1)
     band_gdf_crs = band_crs
     for band_idx, geom in bands:
+        if band_idx == 4:
+            # "> 90 min" is explicitly out-of-budget/out-of-scope territory (see brief),
+            # and with sparse access points over a large unit it can cover most of the
+            # map -- a solid red fill there dominates the view instead of reading as
+            # "not interesting." Leaving it unrendered is itself the signal: uncolored
+            # means either close-in (< 30 min, just not highlighted) or beyond budget.
+            continue
         geom_wgs = gpd.GeoSeries([geom], crs=band_gdf_crs).to_crs("EPSG:4326").iloc[0]
         band_name = band_names.get(band_idx, str(band_idx))
         sub = effort_folder.newfolder(name=band_name)
@@ -225,6 +232,11 @@ def build_kml(cfg: dict, zones: list, foot_minutes_path: Path, habitat_path: Pat
     hab_bands, hab_crs = _downsampled_bands(habitat_path, hab_edges, nodata_override=-1,
                                              downsample_factor=15, smooth_window=7, min_part_acres=3.0)
     for band_idx, geom in hab_bands:
+        if band_idx == 1:
+            # "0.0-0.4 low" is most of the map for a partial (terrain-only) score --
+            # same reasoning as skipping the >90 min effort band: coloring the "nothing
+            # interesting" majority dominates the view instead of highlighting signal.
+            continue
         geom_wgs = gpd.GeoSeries([geom], crs=hab_crs).to_crs("EPSG:4326").iloc[0]
         hab_name = hab_names.get(band_idx, str(band_idx))
         sub = heat_folder.newfolder(name=hab_name)
