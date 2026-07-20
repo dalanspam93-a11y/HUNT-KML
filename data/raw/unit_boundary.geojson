@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "unit_boundary",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "Wasatch Mountains, West -- traced from official DWR boundary text description (I-80/US-40/Strawberry Bay Marina Rd/USFS 042/USFS 051/US-6/I-15), not surveyed parcel data" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -111.921, 40.777 ], [ -111.7, 40.79 ], [ -111.5, 40.8 ], [ -111.379, 40.796 ], [ -111.4, 40.6 ], [ -111.41, 40.51 ], [ -111.3, 40.35 ], [ -111.21, 40.2 ], [ -111.23, 40.13 ], [ -111.3, 40.05 ], [ -111.35, 39.97 ], [ -111.51, 39.99 ], [ -111.66, 40.12 ], [ -111.685, 40.24 ], [ -111.851, 40.39 ], [ -111.893, 40.55 ], [ -111.921, 40.777 ] ] ] } }
+]
+}

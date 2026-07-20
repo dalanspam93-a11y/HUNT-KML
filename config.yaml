@@ -12,7 +12,7 @@ run:
     general_rifle_elk_early: "2026-10-03 to 2026-10-09"
     general_rifle_elk_late: "2026-10-10 to 2026-10-16"
     archery: "2026-08-15 to 2026-09-16"
-  atv_available: true
+  atv_available: false           # no real MVUM/ATV-legal route data yet -- disabled rather than seeding from demo placeholders in an otherwise real-data run. Flip to true once access_atv.geojson has real routes.
   atv_role: secondary            # foot trailheads drive the primary effort/pressure score; ATV-legal access is reported per-zone as a secondary/alternate route, not baked into ranking
   max_effort_minutes: 90         # one-way hiking-time budget from legal foot access
   pace_profile: average          # average | fast  (see effort.PACE_MULTIPLIERS)

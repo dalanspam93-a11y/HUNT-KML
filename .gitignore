@@ -1,7 +1,12 @@
 .venv/
 __pycache__/
 *.pyc
-data/raw/
+data/raw/*
+!data/raw/unit_boundary.geojson
+!data/raw/access_foot.geojson
+!data/raw/access_atv.geojson
+!data/raw/dwr_crucial_range.geojson
+!data/raw/dwr_migration_corridor.geojson
 data/interim/
 data/processed/
 output/
